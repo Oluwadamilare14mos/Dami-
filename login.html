@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DamiTools - Login</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: 100vh;
+      background: #0e0f11;
+      color: #fff;
+    }
+    .left {
+      background: url('https://images.unsplash.com/photo-1581091012184-5c1f89c7b6f5?auto=format&fit=crop&w=600&q=80') center/cover;
+    }
+    .right {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+    }
+    .card {
+      background: #1c1f24;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.1);
+      width: 100%;
+      max-width: 350px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00b4d8;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 6px;
+      background: #2a2d31;
+      color: #fff;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #00b4d8;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #0077b6;
+    }
+    .link {
+      color: #00b4d8;
+      text-align: center;
+      cursor: pointer;
+      margin-top: 10px;
+      display: block;
+    }
+    @media (max-width: 768px) {
+      body {
+        grid-template-columns: 1fr;
+      }
+      .left {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="left"></div>
+  <div class="right">
+    <div class="card">
+      <h2>Login to DamiTools</h2>
+      <input type="email" id="email" placeholder="Email" />
+      <input type="password" id="password" placeholder="Password" />
+      <button id="loginBtn">Login</button>
+      <div class="link" id="signupLink">Create Account</div>
+      <div class="link" id="resetLink">Forgot Password?</div>
+      <div class="link" onclick="window.location.href='index.html'">← Back to Home</div>
+    </div>
+  </div>
+
+  <!-- ✅ Firebase + User Save Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword, 
+      createUserWithEmailAndPassword, 
+      sendPasswordResetEmail, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
+    // ✅ DamiTools Firebase Config (correct and fixed)
+    const firebaseConfig = {
+      apiKey: "AIzaSyA2lx1hb2qZsYaXrQhsUp7hepYu5nY3fgs",
+      authDomain: "damitools.firebaseapp.com",
+      projectId: "damitools",
+      storageBucket: "damitools.firebasestorage.app",
+      messagingSenderId: "875796385681",
+      appId: "1:875796385681:android:563ffc58665bdc94875430"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // ✅ Login
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        localStorage.setItem("damiUser", JSON.stringify({
+          email: user.email,
+          uid: user.uid
+        }));
+        alert("Login successful! Welcome to DamiTools.");
+        window.location.href = "index.html";
+      } catch (error) {
+        alert("Login failed: " + error.message);
+      }
+    });
+
+    // ✅ Signup
+    document.getElementById("signupLink").addEventListener("click", async () => {
+      const email = prompt("Enter your email:");
+      const password = prompt("Enter a new password:");
+      if (email && password) {
+        try {
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+          localStorage.setItem("damiUser", JSON.stringify({
+            email: user.email,
+            uid: user.uid
+          }));
+          alert("Account created successfully! Please log in.");
+        } catch (error) {
+          alert("Signup failed: " + error.message);
+        }
+      }
+    });
+
+    // ✅ Password Reset
+    document.getElementById("resetLink").addEventListener("click", async () => {
+      const email = prompt("Enter your email to reset password:");
+      if (email) {
+        try {
+          await sendPasswordResetEmail(auth, email);
+          alert("Password reset link sent to your inbox.");
+        } catch (error) {
+          alert("Error: " + error.message);
+        }
+      }
+    });
+
+    // ✅ Stay logged in check
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        localStorage.setItem("damiUser", JSON.stringify({
+          email: user.email,
+          uid: user.uid
+        }));
+      }
+    });
+  </script>
+</body>
+</html>
