@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DamiTools — Electricals • Lighting • Gadgets</title>
+  <meta name="description" content="DamiTools - electrical tools, lighting, gadgets. Download app / shop online." />
+  <style>
+    /* --- Basic layout & theme --- */
+    :root{
+      --bg:#f6f7fb; --card:#fff; --text:#111; --muted:#666; --brand:#2563eb; --accent:#10b981; --danger:#ef4444;
+    }
+    [data-theme="dark"]{ --bg:#0f1115; --card:#151922; --text:#e8e8e8; --muted:#9aa0ad; --brand:#3b82f6; --accent:#22c55e; --danger:#f87171; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none}
+
+    /* header */
+    header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--card);border-bottom:1px solid rgba(0,0,0,0.06);position:sticky;top:0;z-index:40}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--brand),var(--accent));display:grid;place-items:center;color:#fff;font-weight:900;font-size:18px}
+    .brand h1{font-size:16px;margin:0}
+    .navlinks{display:flex;gap:12px;align-items:center}
+    .navlinks a{padding:8px 12px;border-radius:8px;color:var(--text);font-weight:700}
+    .navlinks a.active{background:var(--brand);color:#fff}
+
+    /* toolbar / search */
+    .toolbar{display:flex;gap:12px;align-items:center;padding:12px; background:transparent}
+    .search{flex:1;display:flex;gap:8px;max-width:900px;margin:0 auto}
+    .search input{flex:1;padding:10px 12px;border-radius:999px;border:1px solid #e6e6e6;background:var(--card);outline:none}
+    .iconbtn{background:transparent;border:1px solid #e6e6e6;padding:8px 10px;border-radius:8px;cursor:pointer}
+
+    /* layout */
+    main{padding:12px;max-width:1200px;margin:0 auto}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    @media(min-width:900px){ .grid{grid-template-columns:repeat(2,1fr);} }
+    .card{background:var(--card);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;border:1px solid rgba(0,0,0,0.05)}
+    .card .imgwrap{height:220px;background:#f0f0f0;display:flex;align-items:center;justify-content:center}
+    .card img{width:100%;height:100%;object-fit:cover;display:block}
+    .card .info{padding:10px;display:flex;flex-direction:column;gap:8px}
+    .title{font-size:15px;font-weight:700}
+    .muted{color:var(--muted);font-size:13px}
+    .price{color:var(--accent);font-weight:800}
+    .card .actions{display:flex;gap:8px;margin-top:auto}
+    .btn{padding:10px;border-radius:8px;border:none;background:var(--brand);color:#fff;cursor:pointer;flex:1}
+    .btn-outline{padding:10px;border-radius:8px;border:1px solid var(--brand);background:transparent;color:var(--brand);cursor:pointer;flex:1}
+
+    /* right side menu panel */
+    .menu-panel{position:fixed;right:-360px;top:0;width:360px;height:100%;background:var(--card);box-shadow:-8px 0 30px rgba(0,0,0,0.12);transition:right .28s;z-index:80;padding:16px;overflow:auto}
+    .menu-panel.open{right:0}
+    .menu-avatar{display:flex;align-items:center;gap:10px;padding:10px;border-bottom:1px solid rgba(0,0,0,0.06)}
+    .menu-avatar img{width:64px;height:64px;border-radius:50%;object-fit:cover}
+    .menu-list{list-style:none;padding:0;margin:12px 0;display:flex;flex-direction:column;gap:8px}
+    .menu-list a{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;color:var(--text);border:1px solid rgba(0,0,0,0.04)}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* modal detail */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:90}
+    .modal-backdrop.open{display:flex}
+    .modal{background:var(--card);width:min(920px,95%);border-radius:12px;padding:14px;max-height:90vh;overflow:auto}
+    .modal .thumbs{display:flex;gap:8px;margin-top:8px}
+    .thumbs img{width:120px;height:80px;object-fit:cover;border-radius:8px;cursor:pointer}
+
+    /* cart / checkout panel */
+    .cart-panel{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:var(--card);padding:12px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.12);display:flex;gap:10px;align-items:center;z-index:70}
+    .cart-count{background:var(--danger);color:#fff;padding:6px 8px;border-radius:999px;font-weight:700;margin-left:6px}
+
+    /* footer */
+    footer{padding:18px;text-align:center;background:var(--card);margin-top:24px;border-top:1px solid rgba(0,0,0,0.04)}
+    .footer-links{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;color:var(--muted)}
+
+    /* small utilities */
+    .muted-small{font-size:13px;color:var(--muted)}
+    .hidden{display:none}
+    .badge{background:#ffd; padding:4px 8px;border-radius:999px;font-weight:700}
+  </style>
+</head>
+<body data-theme="light">
+  <!-- header -->
+  <header>
+    <div class="brand">
+      <div class="logo">DT</div>
+      <div>
+        <h1 style="margin:0;font-size:16px">DamiTools</h1>
+        <div class="muted-small">Electricals • Lighting • Gadgets</div>
+      </div>
+    </div>
+
+    <div class="navlinks" aria-label="Main navigation">
+      <a href="#" id="navHome" class="active">Home</a>
+      <a href="#" id="navCategories">Categories</a>
+      <a href="#" id="navCart">Cart <span id="miniCartCount" class="cart-count" style="display:inline-block;margin-left:6px">0</span></a>
+      <button class="iconbtn" id="openMenuBtn" title="Menu">☰</button>
+    </div>
+  </header>
+
+  <!-- search / toolbar -->
+  <div class="toolbar">
+    <div class="search" style="width:100%">
+      <input id="searchInput" placeholder="Search products (e.g. wire, switch, fan)" />
+      <button class="iconbtn" id="cameraBtn" title="Search by photo">📷</button>
+    </div>
+  </div>
+
+  <!-- main -->
+  <main>
+    <!-- hero -->
+    <section style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:260px">
+        <h2 style="margin:6px 0 8px">Shop top electrical tools & gadgets</h2>
+        <p class="muted-small">Fast delivery • Safe payment • 24/7 support</p>
+      </div>
+      <div style="display:flex;gap:8px">
+        <a id="downloadAppBtn" href="https://expo.dev/accounts/oluwadamiloremose/projects/DamiTools/builds/dae29279-7512-4ffc-b646-686c42152592" target="_blank" class="btn">📥 Download DT App</a>
+        <button id="openCartBtn" class="btn-outline">Open Cart</button>
+      </div>
+    </section>
+
+    <!-- product grid -->
+    <section>
+      <div id="productGrid" class="grid" aria-live="polite"></div>
+    </section>
+
+    <!-- placeholder for empty state -->
+    <div id="emptyState" class="muted" style="text-align:center;padding:24px;display:none">No products</div>
+
+    <footer>
+      <div class="footer-links">
+        <a href="mailto:oluwadamilaremoses14@gmail.com">Email</a>
+        <a href="tel:09036470778">Customer Service: 09036470778</a>
+        <a id="whatsappLink" href="https://wa.me/234705470008" target="_blank">WhatsApp</a>
+        <a href="login.html">Login</a>
+      </div>
+      <div style="margin-top:8px" class="muted-small">© 2025 DamiTools — Free delivery above ₦20,000</div>
+    </footer>
+  </main>
+
+  <!-- menu panel -->
+  <aside id="menuPanel" class="menu-panel" aria-hidden="true">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <strong>Menu</strong>
+      <button id="closeMenuBtn" class="iconbtn">✕</button>
+    </div>
+
+    <div class="menu-avatar" style="margin-top:12px">
+      <img id="menuAvatarImg" src="https://i.imgur.com/6VBx3io.png" alt="avatar" />
+      <div>
+        <div id="menuAvatarName" style="font-weight:800">Guest</div>
+        <div class="muted-small" id="menuAvatarEmail">Not signed in</div>
+      </div>
+    </div>
+
+    <ul class="menu-list">
+      <li><a href="#" id="menuProfile">Account / Profile</a></li>
+      <li><a href="#" id="menuSupport">Help & Support</a></li>
+      <li><a href="tel:09036470778">Customer Service: 09036470778</a></li>
+      <li><a href="mailto:oluwadamilaremoses14@gmail.com">Email Us</a></li>
+      <li><a id="menuWhats" href="https://wa.me/234705470008" target="_blank">WhatsApp: 0705470008</a></li>
+      <li><a href="#" id="menuAbout">About Website</a></li>
+      <li><a id="menuDownload" href="https://expo.dev/accounts/oluwadamiloremose/projects/DamiTools/builds/dae29279-7512-4ffc-b646-686c42152592" target="_blank">📥 Download DamiTools App</a></li>
+      <li><a href="#" id="signOutBtn" style="color:var(--danger)">Sign out</a></li>
+    </ul>
+    <div style="margin-top:12px">
+      <div class="muted-small">Theme</div>
+      <button id="themeToggle" class="iconbtn" style="margin-top:6px">Toggle Dark</button>
+    </div>
+  </aside>
+
+  <!-- product detail modal -->
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true">
+    <div class="modal" id="productModal">
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div style="width:320px">
+          <img id="detailMainImg" src="" alt="product" style="width:100%;height:320px;object-fit:cover;border-radius:8px" />
+          <div class="thumbs" id="detailThumbs"></div>
+        </div>
+        <div style="flex:1;min-width:260px">
+          <h3 id="detailName" style="margin:0 0 6px"></h3>
+          <div class="muted-small" id="detailCat"></div>
+          <div style="margin:8px 0" class="price" id="detailPrice"></div>
+          <p id="detailDesc" class="muted-small">Product description...</p>
+
+          <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+            <input id="detailQty" type="number" value="1" min="1" style="width:86px;padding:8px;border-radius:8px;border:1px solid #e6e6e6" />
+            <button id="detailAddBtn" class="btn">Add to Cart</button>
+            <button id="detailAppBtn" class="btn-outline">Open in App / APK</button>
+          </div>
+          <div style="margin-top:12px" id="similarWrap"></div>
+        </div>
+      </div>
+      <div style="text-align:right;margin-top:12px">
+        <button id="closeModalBtn" class="iconbtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- cart / checkout panel (mini) -->
+  <div class="cart-panel" id="floatingCart">
+    <div>
+      <strong>Cart</strong>
+      <div class="muted-small" style="font-size:12px">Items: <span id="cartCount">0</span></div>
+    </div>
+    <div style="min-width:140px;text-align:right">
+      <div class="muted-small">Total</div>
+      <div id="cartTotal" style="font-weight:800">₦0</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button id="goToCartBtn" class="btn-outline">View</button>
+      <button id="checkoutPanelBtn" class="btn">Checkout</button>
+    </div>
+  </div>
+
+  <!-- Firebase (compat) + app script -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+  <script>
+  /* ============================
+     Firebase init (user-provided)
+     ============================ */
+  const firebaseConfig = {
+    apiKey: "AIzaSyA2lx1hb2qZsYaXrQhsUp7hepYu5nY3fgs",
+    authDomain: "damitools.firebaseapp.com",
+    projectId: "damitools",
+    storageBucket: "damitools.firebasestorage.app",
+    messagingSenderId: "875796385681",
+    appId: "1:875796385681:web:563ffc58665bdc94875430"
+  };
+  try {
+    firebase.initializeApp(firebaseConfig);
+    console.log("Firebase initialized");
+  } catch(e){ console.warn("Firebase init error", e); }
+
+  const auth = firebase.auth ? firebase.auth() : null;
+  const db = firebase.firestore ? firebase.firestore() : null;
+
+  /* ============================
+     UI helpers & state
+     ============================ */
+  const STATE = {
+    products: [],
+    cart: JSON.parse(localStorage.getItem("damitools_cart")||"[]"),
+    currentProduct: null
+  };
+
+  function saveCart(){ localStorage.setItem("damitools_cart", JSON.stringify(STATE.cart)); renderCart(); }
+
+  function toast(msg, t=1400){
+    const el=document.createElement('div'); el.innerText=msg;
+    Object.assign(el.style,{position:'fixed',left:'50%',transform:'translateX(-50%)',bottom:'24px',background:'rgba(0,0,0,0.8)',color:'#fff',padding:'10px 14px',borderRadius:'8px',zIndex:99999});
+    document.body.appendChild(el); setTimeout(()=>el.remove(),t);
+  }
+
+  /* ============================
+     Product generator (~220 items)
+     ============================ */
+  (function generateProducts(){
+    const base = [
+      {k:"pop light 18w",n:"18W POP Light",cat:"Lighting",p:2500},
+      {k:"pop light 12w",n:"12W POP Light",cat:"Lighting",p:1800},
+      {k:"pop light 6w",n:"6W POP Light",cat:"Lighting",p:1200},
+      {k:"pop light 30w",n:"30W POP Light",cat:"Lighting",p:3200},
+      {k:"1 gang switch",n:"1-Gang Switch",cat:"Switches & Sockets",p:800},
+      {k:"2 gang switch",n:"2-Gang Switch",cat:"Switches & Sockets",p:1200},
+      {k:"13a single socket",n:"13A Single Socket",cat:"Switches & Sockets",p:2200},
+      {k:"knife switch",n:"Knife Switch",cat:"Electrical Tools",p:1200},
+      {k:"circuit breaker",n:"Circuit Breaker",cat:"DFB & Protection",p:5000},
+      {k:"1mm wire",n:"1mm Wire (roll)",cat:"Wires & Cables",p:2000},
+      {k:"2.5mm wire",n:"2.5mm Wire (100m)",cat:"Wires & Cables",p:65000},
+      {k:"chandelier",n:"Chandelier",cat:"Lighting",p:32000},
+      {k:"power bank",n:"Power Bank 20000mAh",cat:"Gadgets",p:12000},
+      {k:"earphones",n:"Earphones",cat:"Gadgets",p:1500},
+      {k:"generator",n:"Generator (small)",cat:"Gadgets",p:120000},
+      {k:"rope light",n:"Rope Light",cat:"Accessories",p:3500},
+      {k:"led strip",n:"LED Strip Light",cat:"Accessories",p:2500},
+      {k:"inverter",n:"Power Inverter",cat:"Gadgets",p:45000},
+      {k:"fan standing",n:"Standing Fan",cat:"Fans",p:22000},
+      {k:"phone android",n:"Android Phone",cat:"Phones",p:45000},
+      {k:"iphone",n:"iPhone",cat:"Phones",p:180000},
+      {k:"ipad",n:"iPad",cat:"Tablets",p:220000}
+    ];
+    const brands = ["Generic","Proline","SunBright","ElectroMax","Lumina","PowerCore","SafeLine","Apex","Nova","GlobalTech"];
+    let id=1;
+    const out=[];
+    for(const b of base){
+      out.push({id:id++, name:`${b.n} (${brands[id%brands.length]})`, price:b.p, cat:b.cat, img:`https://source.unsplash.com/600x400/?${encodeURIComponent(b.k)}`});
+      for(const br of brands){
+        if(id>220) break;
+        out.push({id:id++, name:`${b.n} - ${br}`, price:Math.max(200,Math.round(b.p*(0.8+Math.random()*0.6))), cat:b.cat, img:`https://source.unsplash.com/600x400/?${encodeURIComponent(b.k+' '+br)}`});
+      }
+      if(id>220) break;
+      // extras
+      const extras = ["Accessory","Spare","Pack of 2","Pack of 5"];
+      for(const ex of extras){
+        if(id>220) break;
+        out.push({id:id++, name:`${b.n} - ${ex}`, price:Math.max(150,Math.round(b.p*(0.4+Math.random()))), cat:b.cat, img:`https://source.unsplash.com/600x400/?${encodeURIComponent(b.k+' '+ex)}`});
+      }
+      if(id>220) break;
+    }
+    // fill remaining with generic items
+    const extrasList = ["Trunking Pipe 25mm","3x3 PVC Box","DFB Single Phase","LED Spotlight","Black Tape","13A Plug","15A Plug","Power Supply 100W","Solar Light 100W","Bluetooth Speaker","Power Inverter"];
+    let i=0;
+    while(id<=220){
+      const nm = extrasList[i%extrasList.length] + (i%4?` - ${["Std","Pro","Lite","Max"][i%4]}`:"");
+      out.push({id:id++, name:nm, price:Math.round(1000+Math.random()*70000), cat:"Misc", img:`https://source.unsplash.com/600x400/?${encodeURIComponent(nm)}`});
+      i++;
+    }
+    STATE.products = out;
+    console.log("Products generated:", STATE.products.length);
+  })();
+
+  /* ============================
+     Render products
+     ============================ */
+  const productGrid = document.getElementById("productGrid");
+  function createCard(p){
+    const div = document.createElement('div'); div.className='card';
+    div.innerHTML = `
+      <div class="imgwrap"><img src="${p.img}" alt="${escapeHtml(p.name)}" loading="lazy"></div>
+      <div class="info">
+        <div class="title">${escapeHtml(p.name)}</div>
+        <div class="muted">${escapeHtml(p.cat)}</div>
+        <div class="price">₦${Number(p.price).toLocaleString()}</div>
+        <div class="actions">
+          <button class="btn" data-add="${p.id}">Add to Cart</button>
+          <button class="btn-outline" data-details="${p.id}">Details</button>
+        </div>
+      </div>`;
+    return div;
+  }
+
+  function renderProducts(list = STATE.products){
+    productGrid.innerHTML = '';
+    if(!list.length){ document.getElementById('emptyState').style.display='block'; return; }
+    document.getElementById('emptyState').style.display='none';
+    for(const p of list) productGrid.appendChild(createCard(p));
+    // attach delegates
+    productGrid.querySelectorAll('[data-add]').forEach(btn=>{
+      btn.onclick = ()=>{ const id = +btn.dataset.add; addToCartById(id); };
+    });
+    productGrid.querySelectorAll('[data-details]').forEach(btn=>{
+      btn.onclick = ()=>{ const id = +btn.dataset.details; openProductModalById(id); };
+    });
+  }
+
+  /* ============================
+     Product Detail Modal
+     ============================ */
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const detailMainImg = document.getElementById('detailMainImg');
+  const detailName = document.getElementById('detailName');
+  const detailCat = document.getElementById('detailCat');
+  const detailPrice = document.getElementById('detailPrice');
+  const detailDesc = document.getElementById('detailDesc');
+  const detailThumbs = document.getElementById('detailThumbs');
+  const detailAddBtn = document.getElementById('detailAddBtn');
+  const detailQty = document.getElementById('detailQty');
+  const detailAppBtn = document.getElementById('detailAppBtn');
+  function openProductModalById(id){
+    const p = STATE.products.find(x=>x.id===id); if(!p) return;
+    STATE.currentProduct = p;
+    detailMainImg.src = p.img;
+    detailName.innerText = p.name;
+    detailCat.innerText = p.cat;
+    detailPrice.innerText = '₦' + Number(p.price).toLocaleString();
+    detailDesc.innerText = `High-quality ${p.name}. For bulk orders contact customer care.`;
+    // thumbs: produce two variants by adding sig params
+    detailThumbs.innerHTML = '';
+    const imgs = [p.img, p.img + '&sig=1', p.img + '&sig=2'];
+    imgs.forEach(src=>{
+      const im = document.createElement('img'); im.src = src; im.onclick = ()=> detailMainImg.src = src;
+      detailThumbs.appendChild(im);
+    });
+    detailQty.value = 1;
+    modalBackdrop.classList.add('open');
+  }
+  document.getElementById('closeModalBtn').onclick = ()=> modalBackdrop.classList.remove('open');
+  modalBackdrop.onclick = (e)=> { if(e.target === modalBackdrop) modalBackdrop.classList.remove('open'); };
+
+  detailAddBtn.onclick = ()=>{
+    const q = Math.max(1, parseInt(detailQty.value||1));
+    addToCartById(STATE.currentProduct.id, q);
+    modalBackdrop.classList.remove('open');
+  };
+  detailAppBtn.onclick = ()=> openAppOrApk(STATE.currentProduct.id);
+
+  /* ============================
+     Cart functions
+     ============================ */
+  function addToCartById(id, qty=1){
+    const p = STATE.products.find(x=>x.id===id); if(!p) return;
+    const existing = STATE.cart.find(x=>x.id===id);
+    if(existing) existing.qty = Math.min(999, existing.qty + qty);
+    else STATE.cart.push({...p, qty});
+    saveCart(); toast(`${p.name} added to cart`);
+  }
+
+  function renderCart(){
+    const cartCount = STATE.cart.reduce((s,i)=>s+i.qty,0);
+    document.getElementById('cartCount').innerText = cartCount;
+    document.getElementById('miniCartCount').innerText = cartCount;
+    const total = STATE.cart.reduce((s,i)=>s + i.price * i.qty, 0);
+    document.getElementById('cartTotal').innerText = '₦' + total.toLocaleString();
+  }
+
+  // open cart / checkout panel
+  document.getElementById('openCartBtn').onclick = ()=> openCartView();
+  document.getElementById('openMenuBtn').onclick = ()=> toggleMenu(true);
+  document.getElementById('closeMenuBtn').onclick = ()=> toggleMenu(false);
+  document.getElementById('goToCartBtn').onclick = ()=> openCartView();
+  document.getElementById('checkoutPanelBtn').onclick = ()=> openCheckoutOverlay();
+
+  function openCartView(){
+    // quick full-page cart: build modal-like page (simple)
+    let html = `<div style="padding:12px;max-height:70vh;overflow:auto">`;
+    if(!STATE.cart.length){ html += `<p class="muted-small">Cart is empty</p>`; }
+    for(const it of STATE.cart){
+      html += `<div style="display:flex;gap:10px;padding:8px;border-bottom:1px solid rgba(0,0,0,0.04);align-items:center">
+        <img src="${it.img}" style="width:72px;height:72px;object-fit:cover;border-radius:8px">
+        <div style="flex:1">
+          <div style="font-weight:700">${escapeHtml(it.name)}</div>
+          <div class="muted-small">${escapeHtml(it.cat)}</div>
+          <div style="margin-top:6px">₦${Number(it.price).toLocaleString()} × ${it.qty}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="iconbtn" onclick="window.__inc(${it.id})">+</button>
+          <button class="iconbtn" onclick="window.__dec(${it.id})">−</button>
+          <button class="iconbtn" onclick="window.__rm(${it.id})">Remove</button>
+        </div>
+      </div>`;
+    }
+    html += `<div style="margin-top:12px;text-align:right"><strong>Total:</strong> <span style="font-weight:800">₦${STATE.cart.reduce((s,i)=>s+i.price*i.qty,0).toLocaleString()}</span></div>`;
+    html += `<div style="display:flex;gap:8px;margin-top:12px"><button id="checkoutCard" class="btn">Pay with Card</button><button id="checkoutBank" class="btn-outline">Pay with Bank</button><button id="checkoutCOD" class="btn-outline">Pay on Delivery</button></div>`;
+    html += `</div>`;
+    // use modalBackdrop to show
+    modalBackdrop.classList.add('open');
+    const modalInner = document.getElementById('productModal');
+    modalInner.querySelector('#detailMainImg').src = '';
+    modalInner.querySelector('#detailName').innerText = 'Cart';
+    modalInner.querySelector('#detailCat').innerText = '';
+    modalInner.querySelector('#detailPrice').innerText = '';
+    modalInner.querySelector('#detailDesc').innerHTML = html;
+    modalInner.querySelector('#detailAddBtn').style.display='none';
+  }
+
+  // expose small helpers to modal cart buttons
+  window.__inc = function(id){ const it=STATE.cart.find(x=>x.id===id); if(it){it.qty++; saveCart();} };
+  window.__dec = function(id){ const it=STATE.cart.find(x=>x.id===id); if(it){ it.qty=Math.max(1,it.qty-1); saveCart(); } };
+  window.__rm = function(id){ STATE.cart = STATE.cart.filter(x=>x.id!==id); saveCart(); };
+
+  function openCheckoutOverlay(){
+    // simple checkout flow demonstration
+    const total = STATE.cart.reduce((s,i)=>s+i.price*i.qty,0);
+    if(!STATE.cart.length) { toast("Cart is empty"); return; }
+    const ok = confirm(`Proceed to checkout. Total: ₦${total.toLocaleString()}\nChoose OK for Pay on Delivery demo (Card/Bank not integrated).`);
+    if(ok){
+      // Place order locally + optionally push to Firestore
+      const order = {id:Date.now(), items:STATE.cart, total, method:"COD", createdAt:new Date().toISOString()};
+      const ordersLocal = JSON.parse(localStorage.getItem("damitools_orders")||"[]"); ordersLocal.push(order); localStorage.setItem("damitools_orders", JSON.stringify(ordersLocal));
+      if(db) {
+        db.collection("orders").add({ total, items: order.items.map(i=>({id:i.id,name:i.name,qty:i.qty,price:i.price})), method:"COD", createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+          .then(()=> toast("Order placed (cloud)"))
+          .catch(()=> toast("Order placed (saved locally)"));
+      } else toast("Order placed (saved locally)");
+      STATE.cart = []; saveCart();
+    }
+    modalBackdrop.classList.remove('open');
+  }
+
+  function openAppOrApk(productId){
+    const APK_LINK = "https://expo.dev/accounts/oluwadamiloremose/projects/DamiTools/builds/dae29279-7512-4ffc-b646-686c42152592";
+    // attempt intent then fallback
+    try {
+      const intent = `intent://product/${productId}#Intent;scheme=damitools;package=com.oluwadamilaremose.DamiTools;end`;
+      window.location.href = intent;
+      setTimeout(()=> window.open(APK_LINK, "_blank"), 900);
+    } catch(e){ window.open(APK_LINK, "_blank"); }
+  }
+
+  /* ============================
+     Search & UI bindings
+     ============================ */
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', ()=> {
+    const q = searchInput.value.trim().toLowerCase();
+    if(!q) return renderProducts(STATE.products);
+    const filtered = STATE.products.filter(p=> (p.name+' '+(p.cat||'')).toLowerCase().includes(q));
+    renderProducts(filtered);
+  });
+
+  document.getElementById('cameraBtn').addEventListener('click', ()=> alert('Camera search coming soon!'));
+
+  // theme toggle
+  document.getElementById('themeToggle')?.addEventListener('click', ()=> {
+    const cur = document.body.getAttribute('data-theme');
+    const next = cur==='dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', next);
+    localStorage.setItem('damitools_theme', next);
+  });
+  document.getElementById('themeToggle')?.addEventListener('click', ()=> {}); // safe
+
+  // menu profile & signout
+  document.getElementById('signOutBtn').addEventListener('click', async ()=>{
+    if(auth){
+      try{ await auth.signOut(); toast('Signed out'); updateProfileUI(null); } catch(e){ console.warn(e); }
+    } else { toast('Signed out (local)'); updateProfileUI(null); }
+  });
+
+  function toggleMenu(open){
+    const el = document.getElementById('menuPanel');
+    if(open) el.classList.add('open'); else el.classList.remove('open');
+  }
+
+  document.getElementById('menuSupport').addEventListener('click', ()=> {
+    alert('Help & Support\\nCall: 09036470778\\nWhatsApp: 0705470008\\nEmail: oluwadamilaremoses14@gmail.com');
+  });
+
+  document.getElementById('menuProfile').addEventListener('click', ()=> {
+    window.location.href = 'login.html';
+  });
+
+  // open cart from top nav
+  document.getElementById('navCart').addEventListener('click',(e)=>{ e.preventDefault(); openCartView(); });
+
+  // back button support (Android-like)
+  window.addEventListener('popstate', function(e){
+    // simple back behavior handled by browser. If modal open, close it first.
+    if(modalBackdrop.classList.contains('open')){ modalBackdrop.classList.remove('open'); history.pushState({},''); }
+  });
+
+  // show profile info if user logged in
+  function updateProfileUI(user){
+    const name = user ? (user.displayName || user.email || 'User') : 'Guest';
+    const photo = user && user.photoURL ? user.photoURL : 'https://i.imgur.com/6VBx3io.png';
+    document.getElementById('menuAvatarName').innerText = name;
+    document.getElementById('menuAvatarEmail').innerText = user ? (user.email || '') : 'Not signed in';
+    document.getElementById('menuAvatarImg').src = photo;
+  }
+
+  // Firebase auth state
+  if(auth){
+    auth.onAuthStateChanged(user=>{
+      if(user) updateProfileUI(user); else updateProfileUI(null);
+    });
+  } else updateProfileUI(null);
+
+  // utility escapeHtml
+  function escapeHtml(s){ if(s==null) return ''; return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  /* ============================
+     Init app
+     ============================ */
+  (function init(){
+    // apply saved theme
+    const savedTheme = localStorage.getItem('damitools_theme'); if(savedTheme) document.body.setAttribute('data-theme', savedTheme);
+
+    renderProducts();
+    renderCart();
+    // expose for debugging
+    window.STATE = STATE;
+    // small keyboard back handling
+    document.addEventListener('keydown',(ev)=>{ if(ev.key==='Escape'){ modalBackdrop.classList.remove('open'); toggleMenu(false); } });
+  })();
+  </script>
+</body>
+</html>
